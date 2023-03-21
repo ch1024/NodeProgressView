@@ -412,11 +412,22 @@ public class RoundSeekBar extends View {
 
     /**
      * 设置进度
+     * @param progress 进度
+     * @param onChanged 是否需要回调
      */
-    public void setProgress(int progress){
+    public void setProgress(int progress,boolean onChanged){
         if (progress>maxProgress) return;
+        //改变值
+        boolean isChanged=false;
+        if (currentProgress!=progress){
+            isChanged=true;
+        }
         currentProgress=progress;
         postInvalidate();
+        //防止调用外部调用progress是错误的
+        if (isChanged && onChanged && roundSeekBarListener!=null){
+            roundSeekBarListener.onProgressChanged(this,progress);
+        }
     }
     /**
      * 获取进度

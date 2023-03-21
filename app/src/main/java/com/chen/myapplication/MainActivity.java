@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.seek_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                roundSeekBar.setProgress(roundSeekBar.getProgress()+1);
+                roundSeekBar.setProgress(roundSeekBar.getProgress()+1,true);
             }
         });
     }
