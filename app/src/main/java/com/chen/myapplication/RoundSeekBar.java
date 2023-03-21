@@ -414,7 +414,14 @@ public class RoundSeekBar extends View {
      * 设置进度
      */
     public void setProgress(int progress){
+        if (progress>maxProgress) return;
         currentProgress=progress;
         postInvalidate();
+    }
+    /**
+     * 获取进度
+     */
+    public int getProgress(){
+        return currentProgress;
     }
 }

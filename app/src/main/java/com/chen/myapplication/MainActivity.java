@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -44,5 +45,13 @@ public class MainActivity extends AppCompatActivity {
 //        list.add(800);
 //        list.add(1000);
         roundSeekBar.setNode(list);
+
+
+        findViewById(R.id.seek_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                roundSeekBar.setProgress(roundSeekBar.getProgress()+1);
+            }
+        });
     }
 }
