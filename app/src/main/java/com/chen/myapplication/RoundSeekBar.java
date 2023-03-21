@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -125,11 +126,8 @@ public class RoundSeekBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        initNum();
-        //初始化节点图片
-        initNodeImage();
-        //初始化拖拽图片
-        initThumbImage();
+        //当前进度
+        initCurrent();
         //画背景
         drawBackground(canvas);
         //画当前进度
@@ -140,7 +138,46 @@ public class RoundSeekBar extends View {
         drawThumb(canvas);
     }
 
+    /**
+     * 当前进度计算
+     */
+    private void initCurrent() {
+        mCurrentProgress = (float) (currentProgress*1.0/maxProgress);
+    }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getMode(widthMeasureSpec);
+        int height = MeasureSpec.getMode(heightMeasureSpec);
+        int at_height=40; //设置Warp后，采用希望高度
+        int at_width=300; //设置Warp后，采用希望宽度
+        switch (width){
+            case MeasureSpec.AT_MOST:
+                break;
+            case MeasureSpec.EXACTLY:
+                at_width = MeasureSpec.getSize(widthMeasureSpec);
+                break;
+            case MeasureSpec.UNSPECIFIED:
+                break;
+        }
+        switch (height){
+            case MeasureSpec.AT_MOST:
+                break;
+            case MeasureSpec.EXACTLY:
+                at_height = MeasureSpec.getSize(heightMeasureSpec);
+                break;
+            case MeasureSpec.UNSPECIFIED:
+                break;
+        }
+
+        setMeasuredDimension(at_width,at_height);
+
+        initNum();
+        //初始化节点图片
+        initNodeImage();
+        //初始化拖拽图片
+        initThumbImage();
+    }
 
     /**
      * 计算
@@ -163,8 +200,7 @@ public class RoundSeekBar extends View {
         //进度条y轴（画线,节点）
         mProgressLinerY =(mViewHeight+getPaddingTop()+getPaddingBottom()+progressHeight)/2-(progressHeight/2);
 
-        //当前进度
-        mCurrentProgress = (float) (currentProgress*1.0/maxProgress);
+
     }
 
     private void drawThumb(Canvas canvas) {
