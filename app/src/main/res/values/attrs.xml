@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundSeekBar">
+        <attr name="seek_maxProgress" format="integer"/>
+        <attr name="seek_minProgress" format="integer"/>
+        <attr name="seek_backgroundColor" format="color"/>
+        <attr name="seek_backgroundRadius" format="integer"/>
+        <attr name="seek_progressHeight" format="dimension"/>
+        <attr name="seek_startColor" format="color"/>
+        <attr name="seek_endColor" format="color"/>
+        <attr name="seek_progress" format="integer"/>
+        <attr name="seek_thumbColor" format="color"/>
+        <attr name="seek_thumbImage" format="reference"/>
+        <attr name="seek_thumbWidth" format="dimension"/>
+        <attr name="seek_thumbShow" format="boolean"/>
+        <attr name="seek_NodeImage" format="reference"/>
+        <attr name="seek_NodeColor" format="color"/>
+        <attr name="seek_NodeWidth" format="dimension"/>
+
+
+    </declare-styleable>
+</resources>
