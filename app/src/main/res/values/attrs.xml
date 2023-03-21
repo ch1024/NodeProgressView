@@ -4,7 +4,7 @@
         <attr name="seek_maxProgress" format="integer"/>
         <attr name="seek_minProgress" format="integer"/>
         <attr name="seek_backgroundColor" format="color"/>
-        <attr name="seek_backgroundRadius" format="integer"/>
+        <attr name="seek_backgroundRadius" format="boolean"/>
         <attr name="seek_progressHeight" format="dimension"/>
         <attr name="seek_startColor" format="color"/>
         <attr name="seek_endColor" format="color"/>

@@ -27,7 +27,7 @@ public class RoundSeekBar extends View {
     private int maxProgress=100;
     private int minProgress=0;
     private int backgroundColor=Color.parseColor("#7FFFFFFF");
-    private int backgroundRadius=0;
+    private boolean backgroundRadius=false;
     private float progressHeight=10;
     private int startColor=Color.parseColor("#aab8d4");
     private int endColor=Color.parseColor("#7FFFFFFF");
@@ -82,7 +82,7 @@ public class RoundSeekBar extends View {
             maxProgress = typedArray.getInt(R.styleable.RoundSeekBar_seek_maxProgress, 100);
             minProgress = typedArray.getInt(R.styleable.RoundSeekBar_seek_minProgress, 0);
             backgroundColor = typedArray.getColor(R.styleable.RoundSeekBar_seek_backgroundColor, Color.parseColor("#7FFFFFFF"));
-            backgroundRadius = typedArray.getInt(R.styleable.RoundSeekBar_seek_backgroundRadius, 0);
+            backgroundRadius = typedArray.getBoolean(R.styleable.RoundSeekBar_seek_backgroundRadius, false);
             progressHeight = typedArray.getDimension(R.styleable.RoundSeekBar_seek_progressHeight, 10);
             startColor = typedArray.getColor(R.styleable.RoundSeekBar_seek_startColor, Color.parseColor("#aab8d4"));
             endColor = typedArray.getColor(R.styleable.RoundSeekBar_seek_endColor, Color.parseColor("#7FFFFFFF"));
@@ -188,8 +188,8 @@ public class RoundSeekBar extends View {
         mViewWidth =getMeasuredWidth();
 
         //起始位置
-        paddingLeftX =backgroundRadius>0?progressHeight/2+getPaddingLeft():+getPaddingLeft();
-        paddingRightX =backgroundRadius>0?progressHeight/2+getPaddingRight():+getPaddingRight();
+        paddingLeftX =backgroundRadius?progressHeight/2+getPaddingLeft():+getPaddingLeft();
+        paddingRightX =backgroundRadius?progressHeight/2+getPaddingRight():+getPaddingRight();
         //进度线宽度(由于简单，进度圆之接线条替换了，cap)
         mProgressLinerWidth =mViewWidth-(paddingLeftX + paddingRightX);
         //真实宽度（控制宽度）
@@ -221,7 +221,12 @@ public class RoundSeekBar extends View {
         }else {
             //拖拽圆点
             thumbPaint.setColor(thumbColor);
-            float left=(mCurrentProgress * mProgressLinerWidth)+paddingLeftX+paddingRightX-thumbWidth/2;
+            float left;
+            if (backgroundRadius){
+                left =(mCurrentProgress * mProgressLinerWidth)+paddingLeftX+paddingRightX-thumbWidth/2;
+            }else {
+                left=(mCurrentProgress * mProgressLinerWidth)+paddingLeftX+paddingRightX;
+            }
             canvas.drawCircle(left,mProgressLinerY,thumbWidth/2,thumbPaint);
         }
         canvas.save();
@@ -287,15 +292,7 @@ public class RoundSeekBar extends View {
     private List<Integer> mProgressNode=new ArrayList<>();
     //保存进度节点位置
     private List<RectF> mProgressNodeRect=new ArrayList<>();
-    /**
-     * 设置进度节点
-     * @param node 进度节点
-     */
-    public void setNode(@NonNull List<Integer> node){
-        this.mProgressNode.clear();
-        this.mProgressNode.addAll(node);
-        invalidate();
-    }
+
 
     private Bitmap drawableToBitmap(Drawable nodeImage) {
         int width = nodeImage.getIntrinsicWidth();
@@ -321,7 +318,7 @@ public class RoundSeekBar extends View {
 
     private void drawBackground(Canvas canvas) {
         mPaint.setStrokeWidth(progressHeight);
-        if (backgroundRadius>0){
+        if (backgroundRadius){
             mPaint.setStrokeCap(Paint.Cap.ROUND);
         }else {
             mPaint.setStrokeCap(Paint.Cap.SQUARE);
@@ -399,5 +396,25 @@ public class RoundSeekBar extends View {
         void onStartTrackingTouch(RoundSeekBar seekBar);
         void onStopTrackingTouch(RoundSeekBar seekBar);
         void onProgressChanged(RoundSeekBar seekBar,int progress);
+    }
+
+    //------------------------对外开放方法-----------------------------
+
+    /**
+     * 设置进度节点
+     * @param node 进度节点
+     */
+    public void setNode(@NonNull List<Integer> node){
+        this.mProgressNode.clear();
+        this.mProgressNode.addAll(node);
+        invalidate();
+    }
+
+    /**
+     * 设置进度
+     */
+    public void setProgress(int progress){
+        currentProgress=progress;
+        postInvalidate();
     }
 }
