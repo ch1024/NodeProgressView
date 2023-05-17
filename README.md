@@ -11,3 +11,8 @@
       还有节点也是一样（seek_NodeWidth）
 
       目前只支持图片的drawable,其他尚未兼容
+
+新加入：WindowView属于扩展，效果是进度条上方的浮窗
+
+       注意：嵌套内部view,所以内部只能通过Api调用，已提供setRoundSeekBarData
+
