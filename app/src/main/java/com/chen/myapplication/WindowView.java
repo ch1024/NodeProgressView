@@ -126,11 +126,16 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
     }
 
 
+    boolean isFast=false;
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        initWindowData();
-        initTopTranslation(getRoundSeekBar());
+        if (!isFast){
+            initWindowData();
+            initTopTranslation(getRoundSeekBar());
+            isFast=true;
+        }
+
     }
 
 
@@ -182,7 +187,8 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         float topY = roundSeekBar.getCurrentTopY();
         float thumbHeight = roundSeekBar.getThumbHeight();
         float translationY=topY-thumbHeight;
-        float translationX=leftX - (windowWidth / 2.0f);;
+        float translationX=leftX - (windowWidth / 2.0f);
+
 
         //最小边界
         if (translationX<=0.0f){
@@ -249,6 +255,14 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
      */
     public void setSeekWindowShow(SeekWindowShow seekWindowShow) {
         this.seekWindowShow = seekWindowShow;
+        switch (this.seekWindowShow){
+            case Permanent:
+                if (topWindow.getVisibility()!=VISIBLE)topWindow.setVisibility(VISIBLE);
+                break;
+            case Touch_Show:
+                if (topWindow.getVisibility()!=GONE)topWindow.setVisibility(GONE);
+                break;
+        }
     }
 
     /**

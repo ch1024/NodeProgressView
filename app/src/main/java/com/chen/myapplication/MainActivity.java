@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         window.setWindowWidth(150,100);
         TextView textView = new TextView(this);
         textView.setText("aaaaa");
+        window.setSeekWindowShow(WindowView.SeekWindowShow.Touch_Show);
         window.showTopWindowView(textView);
 
 
