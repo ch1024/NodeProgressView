@@ -16,3 +16,7 @@
 
        注意：嵌套内部view,所以内部只能通过Api调用，已提供setRoundSeekBarData
 
+            使用时最好不要用xml中大小固定，否则会有问题，出现上面浮窗初始化不正确，未做父组件适配子组件
+
+            最好是设置RoundSeekBar大小，xml适应即可。
+

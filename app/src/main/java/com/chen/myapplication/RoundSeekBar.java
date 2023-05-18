@@ -493,7 +493,7 @@ public class RoundSeekBar extends View {
     }
 
     /**
-     * 用于扩展提供基础参数
+     * 用于扩展提供基础参数，一次性设置
      */
     public void setFistData(RoundSeekData data) {
         //期望参数
