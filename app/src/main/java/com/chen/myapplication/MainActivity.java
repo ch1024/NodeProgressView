@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -65,7 +66,9 @@ public class MainActivity extends AppCompatActivity {
         data.setCurrentProgress(100);
         window.setRoundSeekBarData(data);
         window.setWindowWidth(150,100);
-
+        TextView textView = new TextView(this);
+        textView.setText("aaaaa");
+        window.showTopWindowView(textView);
 
 
         //

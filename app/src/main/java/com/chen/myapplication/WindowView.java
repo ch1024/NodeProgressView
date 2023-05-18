@@ -32,7 +32,7 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         Permanent,
         Touch_Show
     }
-    SeekWindowShow seekWindowShow=SeekWindowShow.Permanent;
+    private SeekWindowShow seekWindowShow=SeekWindowShow.Permanent;
     //参数
     private RoundSeekData roundSeekBarData;
     //设置window大小
@@ -75,33 +75,6 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
 
 
 
-    //    private void showTopWindow(boolean visibility, MotionEvent event) {
-//        View view = findViewById(WindowId);
-////        if (view==null) addView(mTopWindow);
-//        if (seekWindowShow){
-//            float x = event.getX();
-//            if (x < paddingLeftX || x > mViewWidth - paddingRightX) return;
-//            float currentX = x - paddingLeftX > 0 ? x - paddingLeftX : 0;
-//
-//            if (visibility && mTopWindow.getVisibility()!=View.VISIBLE){
-//                mTopWindow.setVisibility(View.VISIBLE);
-//            }else if (mTopWindow.getVisibility()!=View.GONE){
-//                mTopWindow.setVisibility(View.GONE);
-//            }
-//
-//            mTopWindow.setTranslationX((currentX+topWindowWidth) /2);
-//        }
-//    }
-
-    /**
-     * 设置RoundSeekBar属性
-     */
-    public void setRoundSeekBarData(@NonNull RoundSeekData roundSeekBarData){
-        this.roundSeekBarData = roundSeekBarData;
-        roundSeekBar.setFistData(roundSeekBarData);
-        initWindowData();
-    }
-
     /**
      * 计算初始距离
      */
@@ -109,8 +82,7 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         if (roundSeekBarData.getLayout_height()>0){
             viewHeight=roundSeekBarData.getLayout_height();
         }else if (roundSeekBarData.getLayout_height()== ViewGroup.LayoutParams.MATCH_PARENT){
-            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-            viewHeight=metrics.heightPixels;
+            viewHeight=getMeasuredHeight();
         }else {
             //默认数值
             viewHeight=40;
@@ -118,8 +90,7 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         if (roundSeekBarData.getLayout_width()>0){
             viewWidth=roundSeekBarData.getLayout_width();
         }else if (roundSeekBarData.getLayout_width()== ViewGroup.LayoutParams.MATCH_PARENT){
-            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-            viewWidth=metrics.widthPixels;
+            viewWidth=getMeasuredWidth();
         }else {
             //默认数值
             viewWidth=40;
@@ -154,55 +125,29 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         Log.e("1111", "======"+ topWindowTranslationX);
     }
 
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        initWindowData();
+        initTopTranslation(getRoundSeekBar());
+    }
+
+
+
     /**
      * 计算偏移x
      * @param roundSeekBar seekBar
      * @return 偏移量
      */
     private float numCurrentProgressX(RoundSeekBar roundSeekBar) {
-        float mProgressLinerWidth = getWidth() - (roundSeekBar.getPaddingLeft() + roundSeekBar.getPaddingRight());
+        float mProgressLinerWidth = viewWidth - (roundSeekBar.getPaddingLeft() + roundSeekBar.getPaddingRight());
         float mCurrentProgress = (float) (roundSeekBar.getCurrentProgress() * 1.0 / roundSeekBarData.getMaxProgress());
         return mCurrentProgress * mProgressLinerWidth + roundSeekBar.getPaddingLeft();
     }
 
 
-    /**
-     * 调用RoundSeekBarApi
-     */
-    public RoundSeekBar getRoundSeekBar(){
-        return roundSeekBar;
-    }
 
-
-    public int getWindowWidth() {
-        return windowWidth;
-    }
-
-    public int getWindowHeight() {
-        return windowHeight;
-    }
-
-    public void setWindowWidth(int windowWidth,int windowHeight) {
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-        if (roundSeekBar.getLayoutParams()!=null){
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) roundSeekBar.getLayoutParams();
-            params.topMargin=windowHeight;
-            roundSeekBar.setLayoutParams(params);
-        }else {
-            FrameLayout.LayoutParams params =new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.topMargin=windowHeight;
-            roundSeekBar.setLayoutParams(params);
-        }
-        //设置window
-        if (topWindow.getLayoutParams()!=null){
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) topWindow.getLayoutParams();
-            params.width=windowWidth;
-            params.height=windowHeight;
-            topWindow.setLayoutParams(params);
-        }
-        initTopTranslation(getRoundSeekBar());
-    }
 
     /**
      * 计算当前window位置
@@ -261,6 +206,7 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
                     topWindow.setVisibility(VISIBLE);
                 break;
         }
+        if (windowViewClick!=null) windowViewClick.windowOnStartTrackingTouch(seekBar);
     }
 
     @Override
@@ -272,12 +218,84 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
                     topWindow.setVisibility(GONE);
                 break;
         }
+        if (windowViewClick!=null) windowViewClick.windowOnStopTrackingTouch(seekBar);
     }
 
     @Override
     public void onProgressChanged(RoundSeekBar seekBar, int progress) {
         numTranslation(seekBar);
         Log.e("1111", "onProgressChanged: "+progress);
-
+        if (windowViewClick!=null) windowViewClick.windowOnProgressChanged(seekBar,progress);
     }
+
+    //-------------------对外开放api----------------------
+    private WindowViewClick windowViewClick;
+
+    public void setWindowViewClick(WindowViewClick windowViewClick) {
+        this.windowViewClick = windowViewClick;
+    }
+
+    /**
+     * 外部添加view
+     * @param view 窗口
+     */
+    public void showTopWindowView(View view){
+        topWindow.addView(view);
+    }
+
+    /**
+     * 修改顶部窗口显示方式
+     * @param seekWindowShow 常驻和点击显示
+     */
+    public void setSeekWindowShow(SeekWindowShow seekWindowShow) {
+        this.seekWindowShow = seekWindowShow;
+    }
+
+    /**
+     * 设置RoundSeekBar属性
+     */
+    public void setRoundSeekBarData(@NonNull RoundSeekData roundSeekBarData){
+        this.roundSeekBarData = roundSeekBarData;
+        roundSeekBar.setFistData(roundSeekBarData);
+    }
+
+    /**
+     * 调用RoundSeekBarApi
+     */
+    public RoundSeekBar getRoundSeekBar(){
+        return roundSeekBar;
+    }
+
+
+    public int getWindowWidth() {
+        return windowWidth;
+    }
+
+    public int getWindowHeight() {
+        return windowHeight;
+    }
+
+    public void setWindowWidth(int windowWidth,int windowHeight) {
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
+        if (roundSeekBar.getLayoutParams()!=null){
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) roundSeekBar.getLayoutParams();
+            params.topMargin=windowHeight;
+            roundSeekBar.setLayoutParams(params);
+        }else {
+            FrameLayout.LayoutParams params =new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.topMargin=windowHeight;
+            roundSeekBar.setLayoutParams(params);
+        }
+        //设置window
+        if (topWindow.getLayoutParams()!=null){
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) topWindow.getLayoutParams();
+            params.width=windowWidth;
+            params.height=windowHeight;
+            topWindow.setLayoutParams(params);
+        }
+        initTopTranslation(getRoundSeekBar());
+    }
+
+
 }
