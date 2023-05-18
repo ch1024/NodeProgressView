@@ -276,6 +276,7 @@ public class RoundSeekBar extends View {
         //mProgressLinerWidth-node.width=当前进度条总宽
         //也就是node.width+当前总宽度=mProgressLinerWidth
         currentLeft=mCurrentProgress * mProgressLinerWidth + paddingLeftX;
+        Log.e("111111222222", "currentLeft: "+currentLeft );
         canvas.drawLine(paddingLeftX, mProgressLinerY, mCurrentProgress * mProgressLinerWidth + paddingLeftX, mProgressLinerY, mPaint);
         canvas.save();
     }
@@ -426,6 +427,15 @@ public class RoundSeekBar extends View {
     }
 
     //------------------------对外开放方法-----------------------------
+
+
+    /**
+     * 获取进度
+     * @return 进度
+     */
+    public int getCurrentProgress() {
+        return currentProgress;
+    }
 
     /**
      * 设置进度节点

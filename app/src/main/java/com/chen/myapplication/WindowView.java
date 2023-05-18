@@ -178,6 +178,18 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
     }
 
     /**
+     * 计算偏移x
+     * @param roundSeekBar seekBar
+     * @return 偏移量
+     */
+    private float numCurrentProgressX(RoundSeekBar roundSeekBar) {
+        float mProgressLinerWidth = getWidth() - (roundSeekBar.getPaddingLeft() + roundSeekBar.getPaddingRight());
+        float mCurrentProgress = (float) (roundSeekBar.getCurrentProgress() * 1.0 / roundSeekBarData.getMaxProgress());
+        return mCurrentProgress * mProgressLinerWidth + roundSeekBar.getPaddingLeft();
+    }
+
+
+    /**
      * 调用RoundSeekBarApi
      */
     public RoundSeekBar getRoundSeekBar(){
@@ -239,7 +251,7 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
      * 计算当前window位置
      */
     private void numTranslation(RoundSeekBar roundSeekBar) {
-        float leftX = roundSeekBar.getCurrentLeftX();
+        float leftX = numCurrentProgressX(roundSeekBar);
         float topY = roundSeekBar.getCurrentTopY();
         float thumbHeight = roundSeekBar.getThumbHeight();
         float translationY=topY-thumbHeight;
@@ -283,6 +295,5 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
     @Override
     public void onProgressChanged(RoundSeekBar seekBar, int progress) {
         numTranslation(seekBar);
-        Log.e("11", "onProgressChanged: " );
     }
 }
