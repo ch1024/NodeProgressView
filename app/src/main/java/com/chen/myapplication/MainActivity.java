@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         data.setThumbColor(Color.BLUE);
         data.setLayout_width(LinearLayout.LayoutParams.MATCH_PARENT);
         data.setLayout_height(120);
+        data.setCurrentProgress(100);
         window.setRoundSeekBarData(data);
         window.setWindowWidth(150,100);
 

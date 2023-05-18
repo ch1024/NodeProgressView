@@ -3,6 +3,7 @@ package com.chen.myapplication;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,10 @@ import androidx.annotation.Nullable;
  */
 
 public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBarListener {
+
+    private float topWindowTranslationY;
+    private float topWindowTranslationX;
+
     public enum SeekWindowShow{
         Permanent,
         Touch_Show
@@ -28,8 +33,8 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
     //参数
     private RoundSeekData roundSeekBarData;
     //设置window大小
-    private int windowWidth=200;
-    private int windowHeight=200;
+    private int windowWidth;
+    private int windowHeight;
     //添加window容器
     private LinearLayout topWindow;
 
@@ -65,8 +70,31 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         addView(topWindow);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        RoundSeekBar childAt = null;
+        //确认子组件摆放位置
+        try {
+            childAt = (RoundSeekBar) getChildAt(0);
+        }catch (Exception e){
+            Log.e("1111111", "onLayout 0: "+e.toString() );
+        }
+        try {
+            childAt = (RoundSeekBar) getChildAt(1);
+        }catch (Exception e){
+            Log.e("1111111", "onLayout 1: "+e.toString() );
+        }
+//        if (childAt!=null){
+//            childAt
+//        }
+//        getChildAt(0).getClass();
 
-//    private void showTopWindow(boolean visibility, MotionEvent event) {
+
+    }
+
+
+    //    private void showTopWindow(boolean visibility, MotionEvent event) {
 //        View view = findViewById(WindowId);
 ////        if (view==null) addView(mTopWindow);
 //        if (seekWindowShow){
@@ -90,6 +118,63 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
     public void setRoundSeekBarData(@NonNull RoundSeekData roundSeekBarData){
         this.roundSeekBarData = roundSeekBarData;
         roundSeekBar.setFistData(roundSeekBarData);
+        initWindowData();
+    }
+
+    /**
+     * 计算初始距离
+     */
+    private void initWindowData() {
+
+        float viewHeight;   //整体高度
+        float viewWidth;   //整体宽度
+
+        if (roundSeekBarData.getLayout_height()>0){
+            viewHeight=roundSeekBarData.getLayout_height();
+        }else if (roundSeekBarData.getLayout_height()== ViewGroup.LayoutParams.MATCH_PARENT){
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            viewHeight=metrics.heightPixels;
+        }else {
+            //默认数值
+            viewHeight=40;
+        }
+        if (roundSeekBarData.getLayout_width()>0){
+            viewWidth=roundSeekBarData.getLayout_width();
+        }else if (roundSeekBarData.getLayout_width()== ViewGroup.LayoutParams.MATCH_PARENT){
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            viewWidth=metrics.widthPixels;
+        }else {
+            //默认数值
+            viewWidth=40;
+        }
+        float progressHeight;
+        if (roundSeekBarData.getProgressHeight()>0){
+            progressHeight=roundSeekBarData.getProgressHeight();
+        }else if (roundSeekBarData.getProgressHeight()== ViewGroup.LayoutParams.MATCH_PARENT){
+            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+            progressHeight=metrics.heightPixels;
+        }else {
+            //默认数值
+            progressHeight=10;
+        }
+        float thumbWidth;
+        if (roundSeekBarData.getThumbWidth()>0){
+            thumbWidth=roundSeekBarData.getThumbWidth();
+        }else {
+            //默认数值
+            thumbWidth=20;
+        }
+        //计算中间值
+        float v = (viewHeight + progressHeight + roundSeekBar.getPaddingTop() + roundSeekBar.getPaddingBottom()) / 2 - progressHeight / 2;
+        topWindowTranslationY = v - thumbWidth;
+
+
+        //计算当前值
+        float mProgressLinerWidth = viewWidth - (roundSeekBar.getPaddingLeft() + roundSeekBar.getPaddingRight());
+        float mCurrentProgress = (float) (roundSeekBarData.getCurrentProgress() * 1.0 / roundSeekBarData.getMaxProgress());
+
+        topWindowTranslationX = mCurrentProgress * mProgressLinerWidth + roundSeekBar.getPaddingLeft();
+        Log.e("1111", "======"+ topWindowTranslationX);
     }
 
     /**
@@ -140,6 +225,14 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
                 break;
         }
         numTranslation(roundSeekBar);
+        //重新设置
+        if (topWindowTranslationY>0){
+            topWindow.setTranslationY(topWindowTranslationY);
+        }
+        if (topWindowTranslationX>0){
+            float v = (topWindowTranslationX - (windowWidth / 2.0f));
+            topWindow.setTranslationX(v);
+        }
     }
 
     /**
@@ -149,19 +242,20 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
         float leftX = roundSeekBar.getCurrentLeftX();
         float topY = roundSeekBar.getCurrentTopY();
         float thumbHeight = roundSeekBar.getThumbHeight();
+        float translationY=topY-thumbHeight;
+        float translationX=leftX - (windowWidth / 2.0f);;
 
-        float v = leftX - (topWindow.getWidth() / 2);
         //最小边界
-        if (v<=0){
-            v=0;
+        if (translationX<=0.0f){
+            translationX=0f;
         }
         //最大边界
-        if (leftX+(topWindow.getWidth() / 2)>=getMeasuredWidth()){
-            v=getMeasuredWidth()-topWindow.getWidth();
+        if (translationX+windowWidth >=getMeasuredWidth()){
+            translationX=getMeasuredWidth()-topWindow.getWidth();
         }
-        Log.e("11111", "numTranslation: "+leftX+"====="+topY );
-        topWindow.setTranslationX(v);
-        topWindow.setTranslationY(topY-thumbHeight);
+
+        topWindow.setTranslationX(translationX);
+        topWindow.setTranslationY(translationY);
     }
 
     @Override
@@ -189,5 +283,6 @@ public class WindowView extends FrameLayout implements RoundSeekBar.RoundSeekBar
     @Override
     public void onProgressChanged(RoundSeekBar seekBar, int progress) {
         numTranslation(seekBar);
+        Log.e("11", "onProgressChanged: " );
     }
 }

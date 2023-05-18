@@ -509,6 +509,7 @@ public class RoundSeekBar extends View {
 
 
         maxProgress = data.getMaxProgress();
+        currentProgress = data.getCurrentProgress();
         backgroundColor = data.getBackgroundColor();
         backgroundRadius = data.isBackgroundRadius();
         progressHeight = data.getProgressHeight();
