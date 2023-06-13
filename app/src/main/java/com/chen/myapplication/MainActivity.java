@@ -1,13 +1,9 @@
 package com.chen.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
@@ -20,7 +16,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 //        RoundSeekBar roundSeekBar = findViewById(R.id.round_seek);
-        WindowView window = findViewById(R.id.window_top);
+//        WindowView window = findViewById(R.id.window_top);
+        RoundSeekBar roundSeekBar = findViewById(R.id.round_seeks);
 
 //        roundSeekBar.getRoundSeekBar().setRoundSeekBarListener(new RoundSeekBar.RoundSeekBarListener() {
 //            @Override
@@ -55,23 +52,47 @@ public class MainActivity extends AppCompatActivity {
         list.add(800);
 //        list.add(1000);
         //设置参数
-        RoundSeekData data = new RoundSeekData();
-        data.setBackgroundColor(Color.GREEN);  //设置背景色
-        data.setBackgroundRadius(true); //设置圆角
-        data.setMaxProgress(1000);
-        data.setNodeColor(Color.BLACK);
-        data.setThumbColor(Color.BLUE);
-        data.setLayout_width(LinearLayout.LayoutParams.MATCH_PARENT);
-        data.setLayout_height(120);
-        data.setCurrentProgress(100);
-        window.setRoundSeekBarData(data);
-        window.setWindowWidth(150,100);
-        TextView textView = new TextView(this);
-        textView.setText("aaaaa");
-        window.setSeekWindowShow(WindowView.SeekWindowShow.Touch_Show);
-        window.showTopWindowView(textView);
+//        RoundSeekData data = new RoundSeekData();
+//        data.setBackgroundColor(Color.GREEN);  //设置背景色
+//        data.setBackgroundRadius(true); //设置圆角
+//        data.setMaxProgress(1000);
+//        data.setNodeColor(Color.BLACK);
+//        data.setThumbColor(Color.BLUE);
+//        data.setLayout_width(LinearLayout.LayoutParams.MATCH_PARENT);
+//        data.setLayout_height(120);
+//        data.setCurrentProgress(100);
+//        window.setRoundSeekBarData(data);
+//        window.setWindowWidth(150,100);
+//        TextView textView = new TextView(this);
+//        textView.setText("aaaaa");
+//        window.setSeekWindowShow(WindowView.SeekWindowShow.Touch_Show);
+//        window.showTopWindowView(textView);
 
 
-        //
+        //-----------------------RoundSeek----------------------------------
+        roundSeekBar.setNode(list);
+        roundSeekBar.setRoundSeekBarListener(new RoundSeekBar.RoundSeekBarListener() {
+            @Override
+            public void onStartTrackingTouch(RoundSeekBar seekBar) {
+                Log.e("11111", "开始: " );
+            }
+
+            @Override
+            public void onStopTrackingTouch(RoundSeekBar seekBar) {
+                Log.e("11111", "结束: " );
+            }
+
+            @Override
+            public void onProgressChanged(RoundSeekBar seekBar, int progress) {
+                Log.e("11111", "改变: "+progress );
+            }
+        });
+        roundSeekBar.setNodeOnClickListener(new RoundSeekBar.NodeOnClickListener() {
+            @Override
+            public void onClick(NodeData nodeData) {
+                //如果配合windowView,用windowView,实现这个监听即可，更新windowView
+                Log.e("11111", "onClick: "+nodeData.getProgressNode());
+            }
+        });
     }
 }

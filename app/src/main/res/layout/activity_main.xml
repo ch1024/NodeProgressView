@@ -7,30 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<!--    <com.chen.myapplication.RoundSeekBar-->
-<!--        android:id="@+id/round_seek"-->
-<!--        app:seek_progressHeight="10dp"-->
-<!--        app:seek_startColor="@color/teal_700"-->
-<!--        app:seek_backgroundColor="@color/teal_200"-->
-<!--        app:seek_endColor="@color/black"-->
-<!--        app:seek_progress="100"-->
-<!--        app:seek_maxProgress="1000"-->
-<!--        app:seek_NodeWidth="10dp"-->
-<!--        app:seek_thumbWidth="80dp"-->
-<!--        app:seek_thumbColor="@color/teal_700"-->
-<!--        app:seek_NodeColor="@color/purple_500"-->
-<!--        app:seek_thumbShow="true"-->
-<!--        app:seek_thumbImage="@drawable/thumb_1"-->
-<!--        app:seek_backgroundRadius="true"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="40dp" />-->
-
-    <com.chen.myapplication.WindowView
-        android:id="@+id/window_top"
+    <com.chen.myapplication.RoundSeekBar
+        android:id="@+id/round_seeks"
+        app:seek_progressHeight="10dp"
+        app:seek_startColor="@color/teal_700"
+        app:seek_backgroundColor="@color/teal_200"
+        app:seek_endColor="@color/black"
+        app:seek_progress="100"
+        app:seek_maxProgress="1000"
+        app:seek_NodeWidth="10dp"
+        app:seek_thumbWidth="80dp"
+        app:seek_thumbColor="@color/teal_700"
+        app:seek_NodeColor="@color/purple_500"
+        app:seek_thumbShow="true"
+        app:seek_thumbImage="@drawable/thumb_1"
+        app:seek_backgroundRadius="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="40dp" />
 
-
+<!--    <com.chen.myapplication.WindowView-->
+<!--        android:id="@+id/window_top"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"/>-->
     <Button
         android:id="@+id/seek_add"
         android:text="进度+1"

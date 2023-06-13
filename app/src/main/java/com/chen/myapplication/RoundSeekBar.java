@@ -11,15 +11,12 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.provider.CalendarContract;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +41,7 @@ public class RoundSeekBar extends View {
     private int nodeColor = Color.parseColor("#FF03DAC5");
     private Drawable nodeImage;
     private float nodeWidth = 10;
+    private boolean nodeOnClickEnlarge =false;
 
     private Paint mPaint;
     private Paint nodePaint;
@@ -99,6 +97,7 @@ public class RoundSeekBar extends View {
             nodeColor = typedArray.getColor(R.styleable.RoundSeekBar_seek_NodeColor, Color.parseColor("#FF03DAC5"));
             nodeImage = typedArray.getDrawable(R.styleable.RoundSeekBar_seek_NodeImage);
             nodeWidth = typedArray.getDimension(R.styleable.RoundSeekBar_seek_NodeWidth, 10);
+            nodeOnClickEnlarge = typedArray.getBoolean(R.styleable.RoundSeekBar_seek_NodeOnClickEnlarge, false);
             typedArray.recycle();
         }
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -239,7 +238,7 @@ public class RoundSeekBar extends View {
     //保存进度节点
     private List<Integer> mProgressNode = new ArrayList<>();
     //保存进度节点位置
-    private List<RectF> mProgressNodeRect = new ArrayList<>();
+    private List<NodeData> mProgressNodeRect = new ArrayList<>();
 
     //---------------------------------------------
 
@@ -301,7 +300,7 @@ public class RoundSeekBar extends View {
                     }
                     canvas.drawBitmap(bitmap, left, top, nodePaint);
                     canvas.save();
-                    mProgressNodeRect.add(new RectF(left, top, left + bitmap.getWidth(), top + bitmap.getHeight()));
+                    mProgressNodeRect.add(new NodeData(integer,new RectF(left, top, left + bitmap.getWidth(), top + bitmap.getHeight())));
                 }
             } else {
                 //节点原点
@@ -313,7 +312,7 @@ public class RoundSeekBar extends View {
                     float left = (v * mProgressLinerWidth) + paddingLeftX + paddingRightX - nodeWidth / 2;
                     canvas.drawCircle(left, mProgressLinerY, nodeWidth / 2, nodePaint);
                     canvas.save();
-                    mProgressNodeRect.add(new RectF(left, mProgressLinerY, left + nodeWidth, mProgressLinerY + nodeWidth));
+                    mProgressNodeRect.add(new NodeData(integer,new RectF(left, mProgressLinerY, left + nodeWidth, mProgressLinerY + nodeWidth)));
                 }
             }
         }
@@ -363,12 +362,15 @@ public class RoundSeekBar extends View {
                     roundSeekBarListener.onStartTrackingTouch(this);
                     if (change) roundSeekBarListener.onProgressChanged(this, currentProgress);
                 }
+                setNodeOnClickEnlarge(event);
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 boolean changeMove = setProgressUp(event);
                 if (roundSeekBarListener != null) {
                     if (changeMove) roundSeekBarListener.onProgressChanged(this, currentProgress);
                 }
+                setNodeOnClickEnlarge(event);
                 break;
             case MotionEvent.ACTION_UP:
                 boolean changeUp = setProgressUp(event);
@@ -376,11 +378,27 @@ public class RoundSeekBar extends View {
                     roundSeekBarListener.onStopTrackingTouch(this);
                     if (changeUp) roundSeekBarListener.onProgressChanged(this, currentProgress);
                 }
+                setNodeOnClickEnlarge(event);
                 break;
         }
         return true;
 
 
+    }
+
+    /**
+     * 是否在节点增加点击面积
+     */
+    private void setNodeOnClickEnlarge(MotionEvent event) {
+        if (!nodeOnClickEnlarge) return;
+        for (int i = 0; i < mProgressNodeRect.size(); i++) {
+            NodeData nodeData = mProgressNodeRect.get(i);
+            float left = nodeData.getRectF().left;
+            if (left-(nodeWidth/2)<=event.getX() && left+nodeWidth-(nodeWidth/2)>=event.getX()){
+                if (nodeOnClickListener!=null) nodeOnClickListener.onClick(nodeData);
+                break;
+            }
+        }
     }
 
 
@@ -424,6 +442,15 @@ public class RoundSeekBar extends View {
         void onStopTrackingTouch(RoundSeekBar seekBar);
 
         void onProgressChanged(RoundSeekBar seekBar, int progress);
+    }
+
+    private NodeOnClickListener nodeOnClickListener;
+
+    public void setNodeOnClickListener(NodeOnClickListener node){
+        this.nodeOnClickListener = node;
+    }
+    public interface NodeOnClickListener {
+        void onClick(NodeData nodeData);
     }
 
     //------------------------对外开放方法-----------------------------

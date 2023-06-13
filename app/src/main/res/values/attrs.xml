@@ -16,6 +16,7 @@
         <attr name="seek_NodeImage" format="reference"/>
         <attr name="seek_NodeColor" format="color"/>
         <attr name="seek_NodeWidth" format="dimension"/>
+        <attr name="seek_NodeOnClickEnlarge" format="boolean"/>
 
 
     </declare-styleable>
